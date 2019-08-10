@@ -1,0 +1,67 @@
+{
+  "manifest_version": 2,
+  "name": "Chrono.gg Extended",
+  "short_name": "Chrono.gg Extended",
+  "version": "1.0.1",
+  "description": "Never miss a good deal!",
+  "author": "Baizey",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "browser_action": {
+    "default_icon": "icons/icon.png",
+    "default_title": "Chrono.gg Extended",
+    "default_popup": "popup/popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://www.chrono.gg/*",
+        "https://www.chrono.gg/*",
+        "http://chrono.gg/*",
+        "https://chrono.gg/*",
+        "https://store.steampowered.com/*"
+      ],
+      "js": [
+        "Utils.js",
+        "Browser.js",
+        "Loading.js",
+        "ShopGame.js",
+        "Request.js",
+        "DailyGame.js",
+        "CoinShop.js",
+        "content/content.js"
+      ],
+      "css": [
+        "content/content.css"
+      ]
+    }
+  ],
+  "background": {
+    "scripts": [
+      "Utils.js",
+      "Browser.js",
+      "Request.js",
+      "background.js"
+    ],
+    "persistent": true
+  },
+
+  "options_page": "options/options.html",
+  "options_ui": {
+    "page": "options/options.html"
+  },
+
+  "browser_specific_settings": {
+    "gecko": {
+      "strict_min_version": "57.0"
+    }
+  },
+
+  "permissions": [
+    "contextMenus",
+    "storage"
+  ]
+}
