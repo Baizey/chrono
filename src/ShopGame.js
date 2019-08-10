@@ -59,12 +59,15 @@ class ShopGame extends Loading {
         return !this.isActive;
     }
 
+    /**
+     * @return {Node}
+     */
     asPopupHtml() {
         const steamOverall = !this.steamData ? '' : `
 <span class="claimed-value" style="opacity: 1; color:${Utils.numberToColor(this.score.overall)}; display:${this.steamData.review ? 'block' : 'none'}">${Utils.numberToRating(this.score.overall)} overall value</span>
 <span class="claimed-value" style="opacity: 1; color:${Utils.numberToColor(this.score.review)}; display:${this.steamData.review ? 'block' : 'none'}">${this.steamData.review}</span>`;
-        const platforms = this.platforms.map(platform => `<li class="game-os--${platform}"></li>`).join('');
-        return `<li id="plusplus-game-${this.hash}" class="gameWrapper">
+        const platforms = ['windows', 'linux', 'osx'].map(os => `<li class="game-os--${this.platforms.contains(os) ? os : 'none'}"></li>`).join('');
+        return `<li id="coinShop-game-${this.hash}" class="gameWrapper">
     <div class="game-summary">
         <span class="game-name">${this.name}</span>
         <div id="plusplus-steam-overview-info-${this.hash}">${steamOverall}</div>
@@ -79,8 +82,7 @@ class ShopGame extends Loading {
             <div class="progress-bar" style="width: ${this.claimed}%;"></div>
         </div>
     </div>
-    <hr>
-</li>`;
+</li>`.toHtmlNode();
     }
 
     /**
@@ -111,8 +113,7 @@ class ShopGame extends Loading {
         </div>
     </div>
 </li>`;
-
-        const node = Utils.parseHtml(html);
+        const node = html.toHtmlNode();
         appendTo.append(node);
         document.getElementById(`plusplus-game-${game.hash}`)
             .addEventListener("click", () => game.chronoFullHtml());
@@ -155,7 +156,7 @@ class ShopGame extends Loading {
                         </div>
                     </div>
                     <div class="game__footer">
-                        <a href="https://www.chrono.gg/shop?chronoplusplus=${game.name}">
+                        <a href="https://www.chrono.gg/shop?chronoplusplus=${game.name}&chronoplusplusbuy=true">
                             <button class="btn" data-event-property="shop-buy-modal">
                                 <div>Pay <span class="button__game-price">${game.price}</span></div>
                             </button>
@@ -167,7 +168,7 @@ class ShopGame extends Loading {
     </div>
 </div>`;
 
-        const node = Utils.parseHtml(html);
+        const node = html.toHtmlNode();
         document.body.appendChild(node);
         const reactModelPortal = document.getElementById('plusplus-game-fullview');
         reactModelPortal.addEventListener('click', () => reactModelPortal.remove());

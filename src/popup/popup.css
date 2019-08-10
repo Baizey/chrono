@@ -56,7 +56,8 @@ h1, h2, h3 {
 }
 
 h3 {
-    line-height: 1.3rem;
+    line-height: 1rem;
+    font-size: 10px;
     color: #cbcbcb;
 }
 
@@ -72,6 +73,18 @@ h2 {
     width: 100%;
     background-color: #4a366a;
     color: #fefefe;
+    border-left-width: 3px;
+    border-right-width: 3px;
+    border-top-width: 0px;
+    border-bottom-width: 0px;
+    border-style: solid;
+    border-color: transparent;
+}
+
+.gameWrapper:hover {
+    border-image: -webkit-gradient(linear, right top, left top, from(#ffd53e), to(#ff934d));
+    border-image: linear-gradient(-90deg, #ffd53e, #ff934d) 1 100%;
+    cursor: pointer;
 }
 
 .game-summary {
@@ -103,7 +116,7 @@ h2 {
     align-items: center;
 }
 
-.game-os--osx, .game-os--linux, .game-os--windows {
+.game-os--osx, .game-os--linux, .game-os--windows, .game-os--none {
     width: 14px;
     height: 15px;
     position: relative;
@@ -133,7 +146,7 @@ h2 {
     padding: 6px 12px;
 }
 
-.loadingWrapper {
+.account__loading {
     color: #fefefe;
     text-align: center;
     width: 100%;
@@ -141,13 +154,13 @@ h2 {
     animation: fadeIn .35s ease-out forwards infinite;
 }
 
-.loadingDotWrapper {
+.loading {
     -webkit-transform: scale(1.5);
     transform: scale(1.5);
     display: inline-block;
 }
 
-.loadingDot {
+.loading-dot {
     background: #54c8c7;
     width: 6px;
     height: 6px;
@@ -200,22 +213,22 @@ h2 {
     }
 }
 
-.loadingDot:nth-child(1) {
+.loading-dot:nth-child(1) {
     animation-delay: .0s;
     -webkit-animation-delay: .0s;
 }
 
-.loadingDot:nth-child(2) {
+.loading-dot:nth-child(2) {
     animation-delay: .1s;
     -webkit-animation-delay: .1s;
 }
 
-.loadingDot:nth-child(3) {
+.loading-dot:nth-child(3) {
     animation-delay: .2s;
     -webkit-animation-delay: .2s;
 }
 
-.loadingDot:nth-child(4) {
+.loading-dot:nth-child(4) {
     animation-delay: .3s;
     -webkit-animation-delay: .3s;
 }

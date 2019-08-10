@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Chrono.gg Extended",
   "short_name": "Chrono.gg Extended",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Never miss a good deal!",
   "author": "Baizey",
   "icons": {
@@ -62,6 +62,7 @@
 
   "permissions": [
     "contextMenus",
-    "storage"
+    "storage",
+    "tabs"
   ]
 }

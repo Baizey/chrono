@@ -14,7 +14,7 @@ class DailyGame extends Loading {
         this.currency = data.currency;
         this.discount = data.discount;
         this.fullPrice = Number(data.normal_price);
-        this.price = (data.sale_price);
+        this.price = Number(data.sale_price);
 
         this.name = data.name;
         this.items = data.items;
@@ -44,17 +44,19 @@ class DailyGame extends Loading {
      * @return {string}
      */
     timeLeft() {
-        return Utils.timeLeft(Date.now() - this.endDate.getTime());
+        return Utils.timeLeft(Date.now() - this.endDate.getTime(), 3);
     }
 
+    /**
+     * @return {Node}
+     */
     asPopupHtml() {
-        const id = 'dailyDeal';
         const steamOverall = !this.steamData ? '' : `<span id="plusplus-steam-steamScore" class="claimed-value" style="opacity: 1; color:${Utils.numberToColor(this.score.review)}; display:${this.steamData.review ? 'block' : 'none'}">${this.steamData.review} reviews</span>`;
-        const platforms = this.platforms.map(platform => `<li class="game-os--${platform}"></li>`).join('');
-        return `<li id="plusplus-game-${id}" class="gameWrapper">
+        const platforms = ['windows', 'linux', 'osx'].map(os => `<li class="game-os--${this.platforms.contains(os) ? os : 'none'}"></li>`).join('');
+        return `<li id="daily-game" class="gameWrapper">
     <div class="game-summary">
         <span class="game-name">${this.name}</span>
-        <div id="plusplus-steam-overview-info-${id}">${steamOverall}</div>
+        <div id="plusplus-steam-overview-info-daily-game">${steamOverall}</div>
         <div class="game-summary__footer">
             <ul class="game-os">
                 ${platforms}
@@ -64,6 +66,6 @@ class DailyGame extends Loading {
                 </span>
         </div>
     </div>
-</li>`;
+</li>`.toHtmlNode();
     }
 }

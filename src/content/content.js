@@ -27,27 +27,50 @@ const login = async () => {
 };
 
 const chronoFrontPage = async () => {
+    login().catch(error => Utils.logError(error));
+
     const coinShop = new CoinShop(true);
     const daily = new DailyGame(true);
-    login().catch(error => Utils.logError(error));
-    coinShop.preLoading();
-    coinShop.await().then(() => coinShop.postLoading());
-    daily.await().then(() => {
-        document.getElementById('pricing-info').children[0].append(Utils.parseHtml(
-            `<ul id="plusplus-daily-review"><li style="text-align:center; margin:auto; color:${Utils.numberToColor(daily.score.review)}">${daily.steamData.review}</li></ul>`));
-    })
+
+    const gameDetails = document.getElementById('game-details--featured');
+    const shop = CoinShop.asFrontPageHtml();
+    const gameDetailsWrapper = document.createElement('div');
+    gameDetailsWrapper.id = 'chronoplusplus-game-details--featured';
+    gameDetailsWrapper.class = 'game-details--featured';
+    gameDetails.parentNode.insertBefore(gameDetailsWrapper, gameDetails);
+    gameDetailsWrapper.appendChild(gameDetails);
+    gameDetailsWrapper.parentNode.insertBefore(shop, gameDetailsWrapper);
+    document.getElementById('plusplus-coinShop-timer').innerText = CoinShop.timeLeft();
+
+    coinShop.await().then(() => {
+        document.getElementById('plusplus-coinShop-loading').remove();
+        const gamesWrapper = document.getElementById('plusplus-coinShop-games');
+        const games = coinShop.games.filter(e => e.isActive);
+
+        if (games.length === 0)
+            return gamesWrapper.append('<div class="no-games"><img src="/assets/images/no-orders-box.9620fb5c.svg"><h4>The coin coinshop  is all sold out.</h4></div>'.toHtmlNode());
+
+        gamesWrapper.append(`<ul id="plusplus-available-games" class="chrono-shop__games"></ul>`.toHtmlNode());
+        const ul = document.getElementById('plusplus-available-games');
+        games.forEach(game => game.chronoIconHtml(ul));
+    });
+
+    daily.await().then(() =>
+        document.getElementById('pricing-info').children[0].append(`<ul id="plusplus-daily-review"><li style="text-align:center; margin:auto; color:${Utils.numberToColor(daily.score.review)}">${daily.steamData.review}</li></ul>`.toHtmlNode()))
 };
 
 const chronoCoinShop = async () => {
     const params = new URLSearchParams(window.location.search);
     if (params.has('chronoplusplus')) {
         const title = params.get('chronoplusplus');
+        const buy = params.has('chronoplusplusbuy') && params.get('chronoplusplusbuy') === 'true';
         await Utils.wait(() => document.getElementsByClassName('chrono-shop__games').length > 0);
         const titles = document.getElementsByClassName('game-name');
         for (let i = 0; i < titles.length; i++) {
             if (titles[i].innerText === title) {
                 titles[i].click();
-                document.getElementsByClassName('button__game-price')[0].click();
+                if (buy)
+                    document.getElementsByClassName('button__game-price')[0].click();
                 break;
             }
         }

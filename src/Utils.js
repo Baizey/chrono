@@ -1,27 +1,71 @@
+/**
+ * @param {number} size
+ * @return {*[]}
+ */
+Array.prototype.skip = function (size) {
+    return this.slice(size);
+};
+
+/**
+ * @param {number} size
+ * @return {*[]}
+ */
+Array.prototype.limit = function (size) {
+    return this.slice(0, size);
+};
+
+/**
+ * @param {*} item
+ * @return {boolean}
+ */
+Array.prototype.contains = function (item) {
+    for (let i = 0; i < this.length; i++)
+        if (item === this[i])
+            return true;
+    return false;
+};
+
+/**
+ * @param {string} substring
+ * @return {boolean}
+ */
+String.prototype.contains = function (substring) {
+    return this.indexOf(substring) >= 0;
+};
+
+/**
+ * @return {Node}
+ */
+String.prototype.toHtmlNode = function () {
+    const t = document.createElement('template');
+    t.innerHTML = this;
+    return t.content.cloneNode(true);
+};
+
 class Utils {
 
     static steamReviewToScore(review) {
         const low = review.toLowerCase();
         if (low === 'mixed')
             return 0.5;
-        const pos = low.indexOf('positive') >= 0;
-        const neg = low.indexOf('negative') >= 0;
+        const pos = low.contains('positive');
+        const neg = low.contains('negative');
         if (!neg && !pos) return NaN;
         const direction = pos ? 1 : -1;
 
         switch (low.split(' ')[0]) {
             // -0.5 or 1.5
             case 'overhwelmingly':
-                return .5 + direction * 1;
+                return .5 + direction * 1.00;
             // -0.35 or 1.35
             case 'very':
-                return .5 + direction * .85;
+                return .5 + direction * 0.85;
             //  -0.1 or 1.1
             default:
-                return .5 + direction * .6;
+                return .5 + direction * 0.60;
             //  -0.25 or 1.25
             case 'mostly':
-                return .5 + direction * .75;
+                return .5 + direction * 0.75;
         }
 
         return NaN;
@@ -69,20 +113,18 @@ class Utils {
 
     /**
      * @param {number} unixTime
+     * @param {number} significant
      * @return {string}
      */
-    static timeLeft(unixTime) {
+    static timeLeft(unixTime, significant = 2) {
         unixTime = Math.abs(unixTime);
         const convert = (range, unit) => range ? `${range} ${unit}${range > 1 ? 's' : ''}` : undefined;
         const days = convert(Math.floor(unixTime / (1000 * 60 * 60 * 24)), 'day');
         const hours = convert(Math.floor(unixTime / (1000 * 60 * 60)) % 24, 'hour');
-        if (days) return days + (hours ? ' and ' + hours : '');
         const minutes = convert(Math.floor(unixTime / (1000 * 60)) % 60, 'minute');
-        if (hours) return hours + (minutes ? ' and ' + minutes : '');
         const seconds = convert(Math.floor(unixTime / (1000)) % 60, 'second');
-        if (minutes) return minutes + (seconds ? ' and ' + seconds : '');
-        if (seconds) return seconds;
-        return 'Yes';
+        const result = [days, hours, minutes, seconds].filter(e => e).limit(significant).join(' and ');
+        return result ? result : 'Yes';
     }
 
     /**
@@ -100,6 +142,7 @@ class Utils {
     };
 
     /**
+     * Acts like jQuery
      * @param name
      * @return {Element|Element[]}
      */
@@ -160,16 +203,6 @@ class Utils {
                 resolve();
             });
     }
-
-    /**
-     * @param {string} html
-     * @return {Node}
-     */
-    static parseHtml(html) {
-        const t = document.createElement('template');
-        t.innerHTML = html;
-        return t.content.cloneNode(true);
-    };
 
     /**
      * @param item
