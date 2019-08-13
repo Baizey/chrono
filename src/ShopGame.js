@@ -74,11 +74,18 @@ class ShopGame extends Loading {
     <hr>
     <div class="game-summary">
         <span class="game-name">${this.name}</span>
-        <div id="plusplus-steam-overview-info-${this.hash}">${steamOverall}</div>
+        <div style="width: 100%; min-height: 10px;">
+            <div style="float: left; width:50%;" id="plusplus-steam-overview-info-${this.hash}">${steamOverall}</div>
+            <div style="float: left; width:50%; text-align: right">
+                <span class="claimed-value">Steam price ${this.steamData.price} ${this.steamData.currency}</span>
+            </div>
+        </div>
+        <br>
         <div class="game-summary__footer">
             <ul class="game-os">
                 ${platforms}
              </ul>
+             <span class="date-added">Added ${this.created.getFullYear()}-${(this.created.getMonth() + 1).padStart()}-${this.created.getDate().padStart()}</span>
             <span class="game-price"><img class="game-price-coin" alt="$" src="../icons/icon128.png"/>${this.price}</span></div>
     </div>
     <div class="game__claimed-progress"><span class="claimed-value">${this.claimed}% Claimed</span>
@@ -147,7 +154,7 @@ class ShopGame extends Loading {
                             <ul class="game-os">
                                 ${platforms}
                             </ul>
-                            <span class="date-added">Added: ${game.created.toLocaleDateString()}</span>
+                            <span class="date-added">Added ${game.created.getFullYear()}-${(game.created.getMonth() + 1).padStart()}-${game.created.getDate().padStart()}</span>
                         </div>
                         <div class="game-info"><p class="game-desc">${game.description}</p>
                         <div id ="plusplus-steam-all-info-${game.hash}">${steamInfo}</div>

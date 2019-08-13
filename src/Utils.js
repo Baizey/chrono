@@ -15,14 +15,61 @@ Array.prototype.limit = function (size) {
 };
 
 /**
+ * @param {function(*):*} keyExtractor
+ * @param {function(*):*} valueExtractor
+ * @returns {object}
+ */
+Array.prototype.toObject = function (keyExtractor = item => item, valueExtractor = item => item) {
+    return this.reduce((a, b) => {
+        a[keyExtractor(b)] = valueExtractor(b);
+        return a;
+    }, ({}));
+};
+
+/**
  * @param {*} item
  * @return {boolean}
  */
 Array.prototype.contains = function (item) {
-    for (let i = 0; i < this.length; i++)
-        if (item === this[i])
-            return true;
-    return false;
+    return this.indexOf(item) >= 0;
+};
+
+/**
+ * @returns {string}
+ */
+Number.prototype.padStart = function () {
+    return ("" + this).padStart(2, '0');
+};
+
+/**
+ * @returns {string}
+ */
+Number.prototype.padEnd = function () {
+    return ("" + this).padEnd(2, '0');
+};
+
+/**
+ * @param {boolean|undefined} allProperties
+ * @returns {string[]}
+ */
+Object.prototype.keys = function (allProperties = true) {
+    return Object.keys(this).filter(e => allProperties || this.hasOwnProperty(e));
+};
+
+/**
+ * @param {boolean|undefined} allProperties
+ * @returns {{value: *, key: string}[]}
+ */
+Object.prototype.keyValuePairs = function (allProperties = true) {
+    return this.keys(allProperties).map(key => ({key: key, value: this[key]}));
+};
+
+/**
+ * @param {boolean|undefined} allProperties
+ * @returns {*[]}
+ */
+Object.prototype.values = function (allProperties = true) {
+    return this.keys(allProperties).map(key => this[key]);
 };
 
 /**

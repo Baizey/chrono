@@ -14,7 +14,6 @@ class Browser {
     }
 
     static updateFooter() {
-        //const manifest = chrome.runtime.getManifest();
         const footer = document.getElementById('footer');
         if (footer)
             footer.innerText = footer.innerText
@@ -28,13 +27,6 @@ class Browser {
 
     static isFirefox() {
         return Browser.instance().isFirefox();
-    }
-
-    static updateReviewLink() {
-        const url = Browser.isChrome()
-            ? 'https://chrome.google.com/webstore/detail/universal-automatic-curre/hbjagjepkeogombomfeefdmjnclgojli'
-            : 'https://addons.mozilla.org/en-US/firefox/addon/ua-currency-converter/';
-        chrome.tabs.create({url: url});
     }
 
     static get author() {
@@ -101,9 +93,7 @@ class Browser {
             this.access.storage.sync.get(key, function (resp) {
                 if (Utils.isUndefined(resp))
                     return reject(resp);
-
                 Utils.log('LOAD', `From keys: ${key.join(', ')}\nGot: ${JSON.stringify(resp)}`);
-
                 Object.keys(resp).forEach(key => {
                     try {
                         resp[key] = JSON.parse(resp[key])
@@ -117,7 +107,8 @@ class Browser {
 
     /**
      * @param {string|object} key
-     * @param {*} value
+     * @param {string|number|boolean|undefined} value
+     * @return {Promise<void>}
      */
     save(key, value) {
         const toStore = ((typeof key) === 'string') ? {[key]: value} : key;

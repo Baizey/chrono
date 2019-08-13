@@ -18,7 +18,8 @@ dailyDeal.await().then(async () => {
     wrapper.append(dailyDeal.asPopupHtml());
     document.getElementById('daily-game')
         .addEventListener('click', () => chrome.tabs.create({active: true, url: 'https://chrono.gg'}));
+    document.getElementById('daily-timer').innerText = `Deal ends in\n${dailyDeal.timeLeft()}`;
     setInterval(() => {
         document.getElementById('daily-timer').innerText = `Deal ends in\n${dailyDeal.timeLeft()}`;
-    }, 999);
+    }, 100);
 });
