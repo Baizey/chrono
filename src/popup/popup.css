@@ -6,6 +6,7 @@ body {
     width: 300px;
     height: 500px;
     padding: 0;
+    margin: 0;
     background: -webkit-radial-gradient(50% bottom, rgba(34, 15, 51, .85) 0, rgba(34, 15, 51, .95) 70%),
     url(../images/backgroundPattern.svg) 0 0;
 }
@@ -39,6 +40,7 @@ hr {
 }
 
 ul {
+    margin: 0;
     padding-inline-start: 0;
     padding-inline-end: 0;
 }
@@ -283,4 +285,24 @@ h2 {
     height: 100%;
     background-image: -webkit-gradient(linear, right top, left top, from(#238aae), to(#53a0fd));
     background-image: linear-gradient(-90deg, #238aae, #53a0fd);
+}
+
+.item__headerBG {
+    width: 100%;
+    height: auto;
+    min-height: 130px;
+    background-position: 50%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    overflow: hidden;
+    position: relative;
+}
+
+.item__headerBG img {
+    width: 123%;
+    height: auto;
+    top: 0;
+    left: 50%;
+    margin: 0 0 0 -62%;
+    position: absolute;
 }

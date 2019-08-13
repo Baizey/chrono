@@ -53,7 +53,12 @@ class DailyGame extends Loading {
     asPopupHtml() {
         const steamOverall = !this.steamData ? '' : `<span id="plusplus-steam-steamScore" class="claimed-value" style="opacity: 1; color:${Utils.numberToColor(this.score.review)}; display:${this.steamData.review ? 'block' : 'none'}">${this.steamData.review} reviews</span>`;
         const platforms = ['windows', 'linux', 'osx'].map(os => `<li class="game-os--${this.platforms.contains(os) ? os : 'none'}"></li>`).join('');
+        const url = this.ogImage;
         return `<li id="daily-game" class="gameWrapper">
+    <div class="item__headerBG" style="background-image: url(${url});">
+        <img src="${url}">
+    </div>
+    <hr>
     <div class="game-summary">
         <span class="game-name">${this.name}</span>
         <div id="plusplus-steam-overview-info-daily-game">${steamOverall}</div>

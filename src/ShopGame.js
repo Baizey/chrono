@@ -68,6 +68,10 @@ class ShopGame extends Loading {
 <span class="claimed-value" style="opacity: 1; color:${Utils.numberToColor(this.score.review)}; display:${this.steamData.review ? 'block' : 'none'}">${this.steamData.review}</span>`;
         const platforms = ['windows', 'linux', 'osx'].map(os => `<li class="game-os--${this.platforms.contains(os) ? os : 'none'}"></li>`).join('');
         return `<li id="coinShop-game-${this.hash}" class="gameWrapper">
+    <div class="item__headerBG" style="background-image: url('https://chrono.gg/assets/images/shop/${this.hash}/item-header.jpg');">
+        <img src="https://chrono.gg/assets/images/shop/${this.hash}/item-header--alt.jpg">
+    </div>
+    <hr>
     <div class="game-summary">
         <span class="game-name">${this.name}</span>
         <div id="plusplus-steam-overview-info-${this.hash}">${steamOverall}</div>
