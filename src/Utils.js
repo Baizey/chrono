@@ -52,7 +52,7 @@ Number.prototype.padEnd = function () {
  * @param {boolean|undefined} allProperties
  * @returns {string[]}
  */
-Object.prototype.keys = function (allProperties = true) {
+Object.prototype.keys = function (allProperties = false) {
     return Object.keys(this).filter(e => allProperties || this.hasOwnProperty(e));
 };
 
@@ -60,15 +60,24 @@ Object.prototype.keys = function (allProperties = true) {
  * @param {boolean|undefined} allProperties
  * @returns {{value: *, key: string}[]}
  */
-Object.prototype.keyValuePairs = function (allProperties = true) {
+Object.prototype.keyValuePairs = function (allProperties = false) {
     return this.keys(allProperties).map(key => ({key: key, value: this[key]}));
+};
+
+/**
+ * @param {function(string, *):*}remappingFunction
+ * @returns {Object}
+ */
+Object.prototype.remapValues = function (remappingFunction = (key, value) => value) {
+    this.keyValuePairs().forEach(e => this[e.key] = remappingFunction(e.key, e.value));
+    return this;
 };
 
 /**
  * @param {boolean|undefined} allProperties
  * @returns {*[]}
  */
-Object.prototype.values = function (allProperties = true) {
+Object.prototype.values = function (allProperties = false) {
     return this.keys(allProperties).map(key => this[key]);
 };
 
@@ -90,6 +99,20 @@ String.prototype.toHtmlNode = function () {
 };
 
 class Utils {
+
+    /**
+     * @param {function():*} func
+     * @param {*} defaultValue
+     * @returns {undefined|*}
+     */
+    static tryOrElse(func, defaultValue = undefined) {
+        try {
+            return func();
+        } catch (e) {
+            Utils.logError(e);
+            return defaultValue;
+        }
+    }
 
     static steamReviewToScore(review) {
         const low = review.toLowerCase();

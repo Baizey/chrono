@@ -21,6 +21,13 @@ class Browser {
                 .replace('{author}', Browser.author);
     }
 
+    /**
+     * @param {string} url
+     */
+    static createTab(url) {
+        chrome.tabs.create({active: true, url: url});
+    }
+
     static isChrome() {
         return Browser.instance().isChrome();
     }
@@ -36,6 +43,7 @@ class Browser {
     static get extensionVersion() {
         return chrome.runtime.getManifest().version;
     }
+
     /**
      * @param key
      * @return {Promise<any>}
@@ -45,9 +53,9 @@ class Browser {
     }
 
     /**
-     * @param key
-     * @param value
-     * @return {Promise<any>}
+     * @param {string|object} key
+     * @param {string|number|boolean|undefined} value
+     * @return {Promise<void>}
      */
     static save(key, value) {
         return Browser.instance().save(key, value);
@@ -94,12 +102,7 @@ class Browser {
                 if (Utils.isUndefined(resp))
                     return reject(resp);
                 Utils.log('LOAD', `From keys: ${key.join(', ')}\nGot: ${JSON.stringify(resp)}`);
-                Object.keys(resp).forEach(key => {
-                    try {
-                        resp[key] = JSON.parse(resp[key])
-                    } catch (e) {
-                    }
-                });
+                resp.remapValues((k, v) => Utils.tryOrElse(() => JSON.parse(v), v));
                 resolve(resp);
             });
         })

@@ -31,7 +31,7 @@ class Request {
             const price = (await priceRequest)[steamId].data;
 
             const result = {
-                price: 'No price',
+                price: 'no price',
                 currency: '?',
                 reviewers: -1,
                 review: null
@@ -48,18 +48,6 @@ class Request {
 
             resolve(result);
         });
-
-        const price = Request.background({
-            method: 'httpGet',
-            type: 'steamPrice',
-            id: steamId
-        });
-        const review = Request.background({
-            method: 'httpGet',
-            type: 'steamReview',
-            id: steamId
-        });
-
     }
 
     /**

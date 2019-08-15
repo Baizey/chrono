@@ -8,7 +8,7 @@ coinShop.await().then(async () => {
         .forEach(game => {
             wrapper.append(game.asPopupHtml());
             document.getElementById(`coinShop-game-${game.hash}`)
-                .addEventListener('click', () => chrome.tabs.create({active: true, url: `https://chrono.gg/shop?chronoplusplus=${game.name}`}))});
+                .addEventListener('click', () => Browser.createTab(`https://chrono.gg/shop?chronoplusplus=${game.name}`))});
     document.getElementById('coinShop-timer').innerText = `More games in\n${CoinShop.timeLeft()}`;
 });
 
@@ -17,9 +17,7 @@ dailyDeal.await().then(async () => {
     const wrapper = document.getElementById('daily');
     wrapper.append(dailyDeal.asPopupHtml());
     document.getElementById('daily-game')
-        .addEventListener('click', () => chrome.tabs.create({active: true, url: 'https://chrono.gg'}));
+        .addEventListener('click', () => Browser.createTab('https://chrono.gg'));
     document.getElementById('daily-timer').innerText = `Deal ends in\n${dailyDeal.timeLeft()}`;
-    setInterval(() => {
-        document.getElementById('daily-timer').innerText = `Deal ends in\n${dailyDeal.timeLeft()}`;
-    }, 100);
+    setInterval(() => document.getElementById('daily-timer').innerText = `Deal ends in\n${dailyDeal.timeLeft()}`, 100);
 });
