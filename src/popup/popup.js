@@ -2,17 +2,10 @@ const dailyDeal = new DailyGame(true);
 const coinShop = new CoinShop(true);
 const account = new Account(true);
 
-account.await().then(() => {
-    const info = document.getElementById('coinShop-coin-info');
-    if (!account.hasData) return info.innerText = "Refresh chrono.gg tokens";
-    document.getElementById('coinShop-coin-amount').innerText = account.coins.balance;
-});
-
 coinShop.await()
     .then(async () => await account.await())
     .then(async () => {
         const balance = account.hasData ? account.coins.balance : undefined;
-
         document.getElementById('coinShop-loading').remove();
         const wrapper = document.getElementById('coinShop');
         coinShop.games.filter(e => e.isActive)
@@ -27,15 +20,16 @@ coinShop.await()
     });
 
 dailyDeal.await()
-    .then(async () => await account.await())
     .then(async () => {
-        if (account.hasData) {
+        account.await().then(() => {
+            document.getElementById('coinShop-coin-amount').innerText = account.coins.balance;
             const info = document.getElementById('coinShop-coin-info');
+            if (!account.hasData) return info.innerText = "Refresh chrono.gg";
             const lastClick = account.coins.last.getTime();
             const lastRefresh = dailyDeal.startDate.getTime();
             if (lastClick < lastRefresh)
                 info.innerText = "You can get more coins now!"
-        }
+        });
 
         document.getElementById('daily-loading').remove();
         const wrapper = document.getElementById('daily');

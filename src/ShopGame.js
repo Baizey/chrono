@@ -32,10 +32,7 @@ class ShopGame extends Loading {
 
         this.affordability = {
             calculated: false,
-            days: {
-                worst: 0,
-                average: 0,
-            },
+            days: 0,
             affordable: true
         };
 
@@ -47,32 +44,37 @@ class ShopGame extends Loading {
      * @returns {ShopGame}
      */
     calculateAffordability(initialBalance) {
-        // Days in a chest cycle
-        const cycleLength = 30;
-        // When including coins from chests
-        const averageCoinsPerDayInCycle = 120;
-        // Average gain without chests
-        const averageCoinsPerDay = 25;
-        // Worst coin per day
-        const worstCoinsPerDay = 20;
+        if (Utils.isUndefined(initialBalance))
+            return this;
 
-        if (Utils.isUndefined(initialBalance)) {
-            this.affordability.affordable = false;
+        const missing = this.price - initialBalance;
+
+        if (missing <= 0) {
+            this.affordability.calculated = true;
+            this.affordability.affordable = true;
             return this;
         }
-        const missing = this.price - initialBalance;
-        if (missing > 0) {
-            const avgMonthIncome = averageCoinsPerDayInCycle * cycleLength;
-            const monthsAway = Math.floor(missing / avgMonthIncome);
-            const avgCaseExtra = Math.ceil((missing % avgMonthIncome) / averageCoinsPerDayInCycle);
-            const worstCaseExtra = Math.ceil((missing % avgMonthIncome) / averageCoinsPerDay);
 
-            this.affordability.days.average = monthsAway * cycleLength + avgCaseExtra;
-            this.affordability.days.worst = monthsAway * cycleLength + Math.min(cycleLength, worstCaseExtra);
-            this.affordability.affordable = false;
-        } else {
-            this.affordability.affordable = true;
-        }
+        // Hardcoded estimates, updated when necessary
+        const cycleLength = 30; // days
+        const averageCoinsPerDay = 25; // +- 5
+        const averageCoinsPer3DayChest = 150; // +- 50
+        const averageCoinsPer7DayChest = 350; // +- 50
+        const averageCoinsPer14DayChest = 900;  // +- 100
+        const averageCoinsPer30DayChest = 2250; // +- 250
+        const averageCoinsPerCycle = cycleLength * averageCoinsPerDay
+            + averageCoinsPer3DayChest
+            + averageCoinsPer7DayChest
+            + averageCoinsPer14DayChest
+            + averageCoinsPer30DayChest;
+        const actualAverageCoinsPerDay = averageCoinsPerCycle / cycleLength;
+
+        const cyclesAway = Math.floor(missing / averageCoinsPerCycle);
+        const remaining = missing % averageCoinsPerCycle;
+        const extra = Math.ceil(remaining / actualAverageCoinsPerDay);
+
+        this.affordability.days = cyclesAway * cycleLength + extra;
+        this.affordability.affordable = false;
         this.affordability.calculated = true;
         return this;
     }
@@ -109,12 +111,10 @@ class ShopGame extends Loading {
      * @return {Node}
      */
     asPopupHtml() {
-        const affordText = this.affordability.calculated ?
-            (this.affordability.affordable
-                ? 'You got the coins!'
-                : `${this.affordability.days.average}-${this.affordability.days.worst} coin clicks away`)
+        const affordText = this.affordability.calculated && !this.affordability.affordable ?
+            `~${this.affordability.days} coin clicks away`
             : '';
-        const affordTextColor = Utils.numberToColor(1 - this.affordability.days.worst / 30);
+        const affordTextColor = Utils.numberToColor(1 - this.affordability.days / 30);
         const steamOverall = !this.steamData ? '' : `
 <span class="claimed-value" style="opacity: 1; color:${Utils.numberToColor(this.score.overall)}; display:${this.steamData.review ? 'block' : 'none'}">${Utils.numberToRating(this.score.overall)} overall value</span>
 <span class="claimed-value" style="opacity: 1; color:${Utils.numberToColor(this.score.review)}; display:${this.steamData.review ? 'block' : 'none'}">${this.steamData.review}</span>`;
@@ -156,9 +156,9 @@ class ShopGame extends Loading {
         const affordText = this.affordability.calculated ?
             (this.affordability.affordable
                 ? 'You got the coins!'
-                : `${this.affordability.days.average}-${this.affordability.days.worst} coin clicks away`)
+                : `~${this.affordability.days} coin clicks away`)
             : '';
-        const affordTextColor = Utils.numberToColor(1 - this.affordability.days.worst / 30);
+        const affordTextColor = Utils.numberToColor(1 - this.affordability.days / 30);
         const game = this;
         const steamOverall = !this.steamData ? '' : `<span id="plusplus-steam-steamScore" class="claimed-value" style="opacity: 1; color:${Utils.numberToColor(game.score.overall)}; display:${game.steamData.review ? 'block' : 'none'}">${Utils.numberToRating(game.score.overall)} overall value</span>`;
         const platforms = this.platforms.map(platform => `<li class="game-os--${platform}"></li>`).join('');
