@@ -20,7 +20,8 @@ coinShop.await()
             .forEach(game => {
                 wrapper.append(game.asPopupHtml());
                 document.getElementById(`coinShop-game-${game.hash}`)
-                    .addEventListener('click', () => Browser.createTab(`https://chrono.gg/shop?chronoplusplus=${game.name}`))
+                    .addEventListener('click', () =>
+                        Browser.createTab(`https://chrono.gg/shop?chronoplusplus=${encodeURIComponent(game.name)}`))
             });
         document.getElementById('coinShop-timer').innerText = `More coin shop games in\n${CoinShop.timeLeft()}`;
     });
