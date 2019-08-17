@@ -40,13 +40,43 @@ class Request {
             try {
                 result.price = (price.price_overview.final / 100).toFixed(2);
                 result.currency = price.price_overview.currency;
-            } catch (e) {}
+            } catch (e) {
+            }
             try {
                 result.review = review.query_summary.review_score_desc;
                 result.reviewers = review.query_summary.total_reviews;
-            } catch (e) {}
+            } catch (e) {
+            }
 
             resolve(result);
+        });
+    }
+
+    static async _getAuthorization(useStored) {
+        if (useStored) {
+            const resp = await Browser.load('Authorization');
+            return resp ? resp.Authorization : resp;
+        }
+
+        await Utils.wait(() => Utils.elementExists('.user-name'), 100, 500);
+        const auth = `JWT ${window.localStorage.jwt}`;
+        Browser.save('Authorization', auth).catch(e => Utils.logError(e));
+        return auth;
+    }
+
+    /**
+     * @param useStored
+     * @returns {Promise<any>}
+     */
+    static async accountInfo(useStored = false) {
+        const auth = await this._getAuthorization(useStored);
+        if (!auth) return null;
+        return await Request.background({
+            method: 'httpGet',
+            type: 'account',
+            headers: {
+                'Authorization': auth
+            }
         });
     }
 

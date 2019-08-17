@@ -7,31 +7,46 @@
     <script type="text/javascript" src="../Loading.js"></script>
     <script type="text/javascript" src="../ShopGame.js"></script>
     <script type="text/javascript" src="../Request.js"></script>
+    <script type="text/javascript" src="../Account.js"></script>
     <script type="text/javascript" src="../DailyGame.js"></script>
     <script type="text/javascript" src="../CoinShop.js"></script>
     <script type="text/javascript" src="popup.js"></script>
 </head>
 <body>
-<h2>Daily deal</h2>
-<h3 id="daily-timer"></h3>
-<ul id="daily"></ul>
-<div id="daily-loading" style="padding: 0" class="account__loading">
-    <div class="loading">
-        <div class="loading-dot"></div>
-        <div class="loading-dot"></div>
-        <div class="loading-dot"></div>
-        <div class="loading-dot"></div>
+<div>
+    <h1>Daily deal</h1>
+    <h3 id="daily-timer"></h3>
+    <ul id="daily"></ul>
+    <div id="daily-loading" style="padding: 0" class="account__loading">
+        <div class="loading">
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+        </div>
     </div>
 </div>
-<h2>Coin shop</h2>
-<h3 id="coinShop-timer"></h3>
-<ul id="coinShop"></ul>
-<div id="coinShop-loading" style="padding: 0" class="account__loading">
-    <div class="loading">
-        <div class="loading-dot"></div>
-        <div class="loading-dot"></div>
-        <div class="loading-dot"></div>
-        <div class="loading-dot"></div>
+<div>
+    <h1>Coin shop</h1>
+    <div>
+        <h3>You got
+            <br>
+            <span class="game-price" style="line-height: 1.5;">
+                <img class="game-price-coin" alt="$" src="../icons/icon128.png">
+                <span id="coinShop-coin-amount">?</span>
+            </span>
+        </h3>
+        <h2 id="coinShop-coin-info"></h2>
+    </div>
+    <h3 id="coinShop-timer"></h3>
+    <ul id="coinShop"></ul>
+    <div id="coinShop-loading" style="padding: 0" class="account__loading">
+        <div class="loading">
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+        </div>
     </div>
 </div>
 <br>

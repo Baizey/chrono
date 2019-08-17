@@ -14,6 +14,8 @@ const constructUrl = request => {
             return `${steamBaseUrl}api/appdetails?appids=${encodeURIComponent(request.id)}`;
         case 'steamReview':
             return `${steamBaseUrl}appreviews/${encodeURIComponent(request.id)}?json=1`;
+        case 'account':
+            return `${chronoBaseUrl}account`;
     }
 };
 
@@ -21,10 +23,20 @@ const constructUrl = request => {
  * @type {{get: (function(string): Promise<*>)}}
  */
 const Ajax = {
-    get: url => new Promise((resolve, reject) => {
+    _call: (url, data, method, headers) => new Promise((resolve, reject) => {
         if (!url) return reject('No url given');
         const request = new XMLHttpRequest();
-        request.open('GET', url, true);
+        request.open(method, url, true);
+        if (headers) {
+            headers.keyValuePairs().forEach(pair => {
+                switch (pair.key) {
+                    case 'Authorization':
+                        return request.setRequestHeader('Authorization', pair.value);
+                    default:
+                    // Ignore any unknown headers
+                }
+            });
+        }
         request.onreadystatechange = function () {
             if (request.readyState !== XMLHttpRequest.DONE)
                 return;
@@ -32,9 +44,13 @@ const Ajax = {
                 ? resolve(request.responseText)
                 : reject(request.responseText);
         };
-        request.send();
-
-    })
+        if (data)
+            request.send(data);
+        else
+            request.send();
+    }),
+    get: (url, headers) => Ajax._call(url, undefined, 'GET', headers),
+    post: (url, data, headers) => Ajax._call(url, data, 'POST', headers)
 };
 
 const postChangeMeta = meta => {
@@ -62,7 +78,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, respond) {
         case 'httpGet':
             const url = constructUrl(request);
             const meta = {url: url, method: 'GET', time: Date.now()};
-            Ajax.get(url)
+            Ajax.get(url, request.headers)
                 .then(JSON.parse)
                 .then(resp => respond(Respond.success(resp, meta)))
                 .catch(error => respond(Respond.failure(error, meta)));

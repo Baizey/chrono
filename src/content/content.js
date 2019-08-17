@@ -17,18 +17,16 @@ const login = async () => {
         Utils.log("login", "Logged in...");
         if (Utils.elementExists(loginFail)) throw 'Chrono.++: AutoLogin failed';
     }
-    for (let i = 0; i < 10; i++) {
-        if (!Utils.elementExists(deadCoin)) {
-            document.getElementById('reward-coin').click();
-            break;
-        }
-        await Utils.wait(1000);
-    }
+
+    await Utils.wait(() => !Utils.elementExists(deadCoin), 100, 10).catch();
+    if (!Utils.elementExists(deadCoin))
+        document.getElementById('reward-coin').click();
 };
 
 const chronoFrontPage = async () => {
-    login().catch(error => Utils.logError(error));
-
+    // When logged in get and store authentication key for use
+    login().catch(e => Utils.logError(e));
+    const account = new Account(false);
     const coinShop = new CoinShop(true);
     const daily = new DailyGame(true);
 
@@ -42,18 +40,21 @@ const chronoFrontPage = async () => {
     gameDetailsWrapper.parentNode.insertBefore(shop, gameDetailsWrapper);
     document.getElementById('plusplus-coinShop-timer').innerText = CoinShop.timeLeft();
 
-    coinShop.await().then(() => {
-        document.getElementById('plusplus-coinShop-loading').remove();
-        const gamesWrapper = document.getElementById('plusplus-coinShop-games');
-        const games = coinShop.games.filter(e => e.isActive);
+    coinShop.await()
+        .then(async () => {
+            await account.await();
+            const balance = account.hasData ? account.coins.balance : undefined;
+            document.getElementById('plusplus-coinShop-loading').remove();
+            const gamesWrapper = document.getElementById('plusplus-coinShop-games');
+            const games = coinShop.games.filter(e => e.isActive).map(e => e.calculateAffordability(balance));
 
-        if (games.length === 0)
-            return gamesWrapper.append('<div class="no-games"><img src="/assets/images/no-orders-box.9620fb5c.svg"><h4>The coin coinshop  is all sold out.</h4></div>'.toHtmlNode());
+            if (games.length === 0)
+                return gamesWrapper.append('<div class="no-games"><img src="/assets/images/no-orders-box.9620fb5c.svg"><h4>The coin coinshop  is all sold out.</h4></div>'.toHtmlNode());
 
-        gamesWrapper.append(`<ul id="plusplus-available-games" class="chrono-shop__games"></ul>`.toHtmlNode());
-        const ul = document.getElementById('plusplus-available-games');
-        games.forEach(game => game.chronoIconHtml(ul));
-    });
+            gamesWrapper.append(`<ul id="plusplus-available-games" class="chrono-shop__games"></ul>`.toHtmlNode());
+            const ul = document.getElementById('plusplus-available-games');
+            games.forEach(game => game.chronoIconHtml(ul));
+        });
 
     daily.await().then(() =>
         document.getElementById('pricing-info').children[0].append(`<ul id="plusplus-daily-review"><li style="text-align:center; margin:auto; color:${Utils.numberToColor(daily.score.review)}">${daily.steamData.review}</li></ul>`.toHtmlNode()))

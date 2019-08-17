@@ -29,7 +29,52 @@ class ShopGame extends Loading {
         this.price = data.price;
         this.url = data.url;
         this.id = data._id;
+
+        this.affordability = {
+            calculated: false,
+            days: {
+                worst: 0,
+                average: 0,
+            },
+            affordable: true
+        };
+
         if (this.isLoading && !this.isPreview) this._load().catch(error => Utils.logError(error));
+    }
+
+    /**
+     * @param {number|undefined} initialBalance
+     * @returns {ShopGame}
+     */
+    calculateAffordability(initialBalance) {
+        // Days in a chest cycle
+        const cycleLength = 30;
+        // When including coins from chests
+        const averageCoinsPerDayInCycle = 120;
+        // Average gain without chests
+        const averageCoinsPerDay = 25;
+        // Worst coin per day
+        const worstCoinsPerDay = 20;
+
+        if (Utils.isUndefined(initialBalance)) {
+            this.affordability.affordable = false;
+            return this;
+        }
+        const missing = this.price - initialBalance;
+        if (missing > 0) {
+            const avgMonthIncome = averageCoinsPerDayInCycle * cycleLength;
+            const monthsAway = Math.floor(missing / avgMonthIncome);
+            const avgCaseExtra = Math.ceil((missing % avgMonthIncome) / averageCoinsPerDayInCycle);
+            const worstCaseExtra = Math.ceil((missing % avgMonthIncome) / averageCoinsPerDay);
+
+            this.affordability.days.average = monthsAway * cycleLength + avgCaseExtra;
+            this.affordability.days.worst = monthsAway * cycleLength + Math.min(cycleLength, worstCaseExtra);
+            this.affordability.affordable = false;
+        } else {
+            this.affordability.affordable = true;
+        }
+        this.affordability.calculated = true;
+        return this;
     }
 
     async _load() {
@@ -60,9 +105,16 @@ class ShopGame extends Loading {
     }
 
     /**
+     * {number} initialBalance
      * @return {Node}
      */
     asPopupHtml() {
+        const affordText = this.affordability.calculated ?
+            (this.affordability.affordable
+                ? 'You got the coins!'
+                : `${this.affordability.days.average}-${this.affordability.days.worst} coin clicks away`)
+            : '';
+        const affordTextColor = Utils.numberToColor(1 - this.affordability.days.worst / 30);
         const steamOverall = !this.steamData ? '' : `
 <span class="claimed-value" style="opacity: 1; color:${Utils.numberToColor(this.score.overall)}; display:${this.steamData.review ? 'block' : 'none'}">${Utils.numberToRating(this.score.overall)} overall value</span>
 <span class="claimed-value" style="opacity: 1; color:${Utils.numberToColor(this.score.review)}; display:${this.steamData.review ? 'block' : 'none'}">${this.steamData.review}</span>`;
@@ -78,6 +130,7 @@ class ShopGame extends Loading {
             <div style="float: left; width:50%;" id="plusplus-steam-overview-info-${this.hash}">${steamOverall}</div>
             <div style="float: left; width:50%; text-align: right">
                 <span class="claimed-value">Steam price ${this.steamData.price} ${this.steamData.currency}</span>
+                <span class="claimed-value" style="opacity: 1; color: ${affordTextColor}">${affordText}</span>
             </div>
         </div>
         <br>
@@ -100,6 +153,12 @@ class ShopGame extends Loading {
      * @param {HTMLElement} appendTo
      */
     chronoIconHtml(appendTo) {
+        const affordText = this.affordability.calculated ?
+            (this.affordability.affordable
+                ? 'You got the coins!'
+                : `${this.affordability.days.average}-${this.affordability.days.worst} coin clicks away`)
+            : '';
+        const affordTextColor = Utils.numberToColor(1 - this.affordability.days.worst / 30);
         const game = this;
         const steamOverall = !this.steamData ? '' : `<span id="plusplus-steam-steamScore" class="claimed-value" style="opacity: 1; color:${Utils.numberToColor(game.score.overall)}; display:${game.steamData.review ? 'block' : 'none'}">${Utils.numberToRating(game.score.overall)} overall value</span>`;
         const platforms = this.platforms.map(platform => `<li class="game-os--${platform}"></li>`).join('');
@@ -112,6 +171,7 @@ class ShopGame extends Loading {
     <div class="game-summary">
         <span class="game-name">${game.name}</span>
         <div id="plusplus-steam-overview-info-${game.hash}">${steamOverall}</div>
+        <span class="claimed-value" style="opacity: 1; color: ${affordTextColor}">${affordText}</span>
         <div class="game-summary__footer">
             <ul class="game-os">
                 ${platforms}

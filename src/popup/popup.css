@@ -69,6 +69,14 @@ h3 {
 }
 
 h2 {
+    font-size: 1rem;
+    line-height: 1.3;
+    padding: 10px 0;
+    font-weight: 300;
+    color: #ffa24d;
+}
+
+h1 {
     font-size: 1.5rem;
     line-height: 1.3;
     padding: 10px 0;
@@ -297,6 +305,11 @@ h2 {
     position: relative;
 }
 
+.item__headerBG_dailyDeal {
+    height: 200px;
+    background-position-y: 100px;
+}
+
 .item__headerBG img {
     width: 123%;
     height: auto;
@@ -304,6 +317,10 @@ h2 {
     left: 50%;
     margin: 0 0 0 -62%;
     position: absolute;
+}
+
+.item__headerBG_dailyDeal img {
+    top: -100px;
 }
 
 .footer {

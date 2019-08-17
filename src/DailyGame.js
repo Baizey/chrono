@@ -58,7 +58,7 @@ class DailyGame extends Loading {
         const price = number => this.currency === 'USD' ? `$${number}` : `${number} ${this.currency}`;
 
         return `<li id="daily-game" class="gameWrapper">
-    <div class="item__headerBG" style="background-image: url(${url});">
+    <div class="item__headerBG item__headerBG_dailyDeal" style="background-image: url(${url});">
         <img src="${url}">
     </div>
     <hr>

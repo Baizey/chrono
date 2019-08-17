@@ -263,13 +263,20 @@ class Utils {
     /**
      * @param {number|function} time
      * @param {number|undefined} funcDelay
+     * @param {number|undefined} rejectAfter
      * @return {Promise<void>}
      */
-    static wait(time = 500, funcDelay = 100) {
+    static wait(time = 500, funcDelay = 100, rejectAfter = 0) {
         return (typeof time === 'number')
             ? new Promise(resolve => setTimeout(() => resolve(), time))
-            : time() ? Promise.resolve() : new Promise(async resolve => {
-                while (!time()) await Utils.wait(funcDelay);
+            : time() ? Promise.resolve() : new Promise(async (resolve, reject) => {
+                let counter = 0;
+                while (!time()) {
+                    counter++;
+                    if (rejectAfter && counter > rejectAfter)
+                        return reject();
+                    await Utils.wait(funcDelay);
+                }
                 resolve();
             });
     }

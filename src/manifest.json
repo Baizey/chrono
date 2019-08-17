@@ -30,6 +30,7 @@
         "Loading.js",
         "ShopGame.js",
         "Request.js",
+        "Account.js",
         "DailyGame.js",
         "CoinShop.js",
         "content/content.js"
